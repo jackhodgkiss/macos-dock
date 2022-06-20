@@ -6,3 +6,4 @@ name: Publish Ansible Role
 jobs:
   publish_role:
     uses: jackhodgkiss/.github/.github/workflows/publish_role.yml@main
+    secrets: inherit
