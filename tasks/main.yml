@@ -1,0 +1,67 @@
+---
+- name: Check if dockutil is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/dockutil
+  register: dockutil_stat
+
+- name: Download dockutil
+  ansible.builtin.get_url:
+    url: '{{ dockutil_download }}'
+    dest: '/tmp/dockutil.pkg'
+    checksum: '{{ dockutil_checksum }}'
+    mode: '0700'
+  when: not dockutil_stat.stat.exists
+
+- name: Install dockutil
+  ansible.builtin.command:
+    cmd: installer -pkg /tmp/dockutil.pkg -target /
+  become: true
+  register: dockutil_pkg
+  changed_when: 'dockutil_pkg.rc == 0'
+  when: not dockutil_stat.stat.exists
+
+- name: Remove all items from the dock
+  ansible.builtin.command:
+    cmd: dockutil --remove all --no-restart
+  changed_when: true
+
+- name: Create icons folder
+  ansible.builtin.file:
+    path: '~/.icons'
+    state: directory
+    mode: '0700'
+
+- name: Download icons
+  ansible.builtin.get_url:
+    url: '{{ macicon_prefix }}/{{ item.icon_src }}'
+    dest: '~/.icons'
+    mode: '0644'
+  with_items: '{{ dockitems_add }}'
+  when: item.icon_src is defined
+
+- name: Set icon for each application
+  ansible.builtin.include_tasks: 'tasks/icon.yml'
+  register: icons_set
+  with_items: '{{ dockitems_add }}'
+  when:
+    - item.icon_src is defined
+    - item.icon_dest is defined
+
+# - name: Remove unwanted items from dock
+#   ansible.builtin.include_tasks: 'tasks/remove.yml'
+#   with_items: '{{ dockitems_remove }}'
+
+- name: Add items to dock
+  ansible.builtin.include_tasks: 'tasks/add.yml'
+  with_items: '{{ dockitems_add }}'
+
+- name: Positions items within the dock
+  ansible.builtin.include_tasks: 'tasks/move.yml'
+  with_items: '{{ dockitems_add }}'
+
+- name: Add Home folder to the dock
+  ansible.builtin.command:
+    cmd: dockutil --add '~/' --view grid --display folder --no-restart
+  changed_when: true
+  notify:
+    - Kill dock

@@ -1,0 +1,5 @@
+---
+- name: Kill dock
+  ansible.builtin.command:
+    cmd: 'killall Dock'
+  changed_when: true

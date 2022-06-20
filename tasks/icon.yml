@@ -1,0 +1,13 @@
+- name: Set icon for {{ item.name }}
+  ansible.builtin.copy:
+    src: '~/.icons/{{ item.icon_src }}'
+    dest: '{{ item.path }}/Contents/Resources/{{ item.icon_dest }}'
+    mode: '0644'
+  register: icon_set
+
+- name: Touch {{ item.name }} # noqa no-handler
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: touch
+    mode: '0755'
+  when: icon_set.changed

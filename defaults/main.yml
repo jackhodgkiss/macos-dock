@@ -1,0 +1,8 @@
+---
+dockutil_download: 'https://github.com/kcrawford/dockutil/releases/download/3.0.2/dockutil-3.0.2.pkg'
+dockutil_checksum: 'sha256:175137ea747e83ed221d60b18b712b256ed31531534cde84f679487d337668fd'
+
+dockitems_remove: []
+dockitems_add: []
+
+macicon_prefix: 'https://media.macosicons.com/parse/files/macOSicons'

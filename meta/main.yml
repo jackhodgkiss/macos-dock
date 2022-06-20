@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Jack Hodgkiss
+  description: Manage the Dock in MacOS via dockutil
+
+  license: license MIT
+
+  min_ansible_version: '2.1'
+
+  platforms:
+    - name: macOS
+      versions:
+        - Monterey
+
+  galaxy_tags: []
+
+dependencies: []
